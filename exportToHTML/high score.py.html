@@ -1,0 +1,182 @@
+<html>
+<head>
+<title>high score.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #2aacb8;}
+.s4 { color: #7a7e85;}
+.s5 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+high score.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">random</span>
+<span class="s0">import </span><span class="s1">tkinter </span><span class="s0">as </span><span class="s1">tk</span>
+<span class="s0">from </span><span class="s1">tkinter </span><span class="s0">import </span><span class="s1">Canvas</span><span class="s2">, </span><span class="s1">Label</span>
+
+<span class="s1">GAME_WIDTH </span><span class="s2">= </span><span class="s3">700</span>
+<span class="s1">GAME_HEIGHT </span><span class="s2">= </span><span class="s3">700</span>
+<span class="s1">SPEED </span><span class="s2">= </span><span class="s3">130  </span><span class="s4"># Milliseconds</span>
+<span class="s1">SPACE_SIZE </span><span class="s2">= </span><span class="s3">50</span>
+<span class="s1">BODY_PARTS </span><span class="s2">= </span><span class="s3">5</span>
+<span class="s1">SNAKE_COLOR </span><span class="s2">= </span><span class="s5">&quot;#00FF00&quot;</span>
+<span class="s1">FOOD_COLOR </span><span class="s2">= </span><span class="s5">&quot;#FF0000&quot;</span>
+<span class="s1">BACKGROUND_COLOR </span><span class="s2">= </span><span class="s5">&quot;#000000&quot;</span>
+<span class="s1">score </span><span class="s2">= </span><span class="s3">0</span>
+<span class="s1">high_score </span><span class="s2">= </span><span class="s3">0  </span><span class="s4"># Initialize high score</span>
+
+
+<span class="s0">class </span><span class="s1">Snake</span><span class="s2">:</span>
+    <span class="s0">def </span><span class="s1">__init__</span><span class="s2">(</span><span class="s1">self</span><span class="s2">):</span>
+        <span class="s1">self</span><span class="s2">.</span><span class="s1">body_size </span><span class="s2">= </span><span class="s1">BODY_PARTS</span>
+        <span class="s1">self</span><span class="s2">.</span><span class="s1">coordinates </span><span class="s2">= []</span>
+        <span class="s1">self</span><span class="s2">.</span><span class="s1">squares </span><span class="s2">= []</span>
+
+        <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range</span><span class="s2">(</span><span class="s3">0</span><span class="s2">, </span><span class="s1">BODY_PARTS</span><span class="s2">):</span>
+            <span class="s1">self</span><span class="s2">.</span><span class="s1">coordinates</span><span class="s2">.</span><span class="s1">append</span><span class="s2">([</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s2">])</span>
+
+        <span class="s0">for </span><span class="s1">x</span><span class="s2">, </span><span class="s1">y </span><span class="s0">in </span><span class="s1">self</span><span class="s2">.</span><span class="s1">coordinates</span><span class="s2">:</span>
+            <span class="s1">square </span><span class="s2">= </span><span class="s1">canvas</span><span class="s2">.</span><span class="s1">create_rectangle</span><span class="s2">(</span><span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">, </span><span class="s1">x </span><span class="s2">+ </span><span class="s1">SPACE_SIZE</span><span class="s2">, </span><span class="s1">y </span><span class="s2">+ </span><span class="s1">SPACE_SIZE</span><span class="s2">, </span><span class="s1">fill</span><span class="s2">=</span><span class="s1">SNAKE_COLOR</span><span class="s2">, </span><span class="s1">tag</span><span class="s2">=</span><span class="s5">&quot;snake&quot;</span><span class="s2">)</span>
+            <span class="s1">self</span><span class="s2">.</span><span class="s1">squares</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s1">square</span><span class="s2">)</span>
+
+
+<span class="s0">class </span><span class="s1">Food</span><span class="s2">:</span>
+    <span class="s0">def </span><span class="s1">__init__</span><span class="s2">(</span><span class="s1">self</span><span class="s2">):</span>
+        <span class="s1">self</span><span class="s2">.</span><span class="s1">x </span><span class="s2">= </span><span class="s1">random</span><span class="s2">.</span><span class="s1">randint</span><span class="s2">(</span><span class="s3">0</span><span class="s2">, (</span><span class="s1">GAME_WIDTH </span><span class="s2">// </span><span class="s1">SPACE_SIZE</span><span class="s2">) - </span><span class="s3">1</span><span class="s2">) * </span><span class="s1">SPACE_SIZE</span>
+        <span class="s1">self</span><span class="s2">.</span><span class="s1">y </span><span class="s2">= </span><span class="s1">random</span><span class="s2">.</span><span class="s1">randint</span><span class="s2">(</span><span class="s3">0</span><span class="s2">, (</span><span class="s1">GAME_HEIGHT </span><span class="s2">// </span><span class="s1">SPACE_SIZE</span><span class="s2">) - </span><span class="s3">1</span><span class="s2">) * </span><span class="s1">SPACE_SIZE</span>
+
+        <span class="s1">self</span><span class="s2">.</span><span class="s1">coordinates </span><span class="s2">= [</span><span class="s1">self</span><span class="s2">.</span><span class="s1">x</span><span class="s2">, </span><span class="s1">self</span><span class="s2">.</span><span class="s1">y</span><span class="s2">]</span>
+
+        <span class="s1">self</span><span class="s2">.</span><span class="s1">square </span><span class="s2">= </span><span class="s1">canvas</span><span class="s2">.</span><span class="s1">create_rectangle</span><span class="s2">(</span><span class="s1">self</span><span class="s2">.</span><span class="s1">x</span><span class="s2">, </span><span class="s1">self</span><span class="s2">.</span><span class="s1">y</span><span class="s2">, </span><span class="s1">self</span><span class="s2">.</span><span class="s1">x </span><span class="s2">+ </span><span class="s1">SPACE_SIZE</span><span class="s2">, </span><span class="s1">self</span><span class="s2">.</span><span class="s1">y </span><span class="s2">+ </span><span class="s1">SPACE_SIZE</span><span class="s2">, </span><span class="s1">fill</span><span class="s2">=</span><span class="s1">FOOD_COLOR</span><span class="s2">,</span>
+                                              <span class="s1">tag</span><span class="s2">=</span><span class="s5">&quot;food&quot;</span><span class="s2">)</span>
+
+
+<span class="s0">def </span><span class="s1">next_turn</span><span class="s2">():</span>
+    <span class="s0">global </span><span class="s1">food</span>
+    <span class="s1">x</span><span class="s2">, </span><span class="s1">y </span><span class="s2">= </span><span class="s1">snake</span><span class="s2">.</span><span class="s1">coordinates</span><span class="s2">[</span><span class="s3">0</span><span class="s2">]</span>
+
+    <span class="s0">if </span><span class="s1">direction </span><span class="s2">== </span><span class="s5">&quot;up&quot;</span><span class="s2">:</span>
+        <span class="s1">y </span><span class="s2">-= </span><span class="s1">SPACE_SIZE</span>
+    <span class="s0">elif </span><span class="s1">direction </span><span class="s2">== </span><span class="s5">&quot;down&quot;</span><span class="s2">:</span>
+        <span class="s1">y </span><span class="s2">+= </span><span class="s1">SPACE_SIZE</span>
+    <span class="s0">elif </span><span class="s1">direction </span><span class="s2">== </span><span class="s5">&quot;left&quot;</span><span class="s2">:</span>
+        <span class="s1">x </span><span class="s2">-= </span><span class="s1">SPACE_SIZE</span>
+    <span class="s0">elif </span><span class="s1">direction </span><span class="s2">== </span><span class="s5">&quot;right&quot;</span><span class="s2">:</span>
+        <span class="s1">x </span><span class="s2">+= </span><span class="s1">SPACE_SIZE</span>
+
+    <span class="s1">snake</span><span class="s2">.</span><span class="s1">coordinates</span><span class="s2">.</span><span class="s1">insert</span><span class="s2">(</span><span class="s3">0</span><span class="s2">, [</span><span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">])</span>
+    <span class="s1">square </span><span class="s2">= </span><span class="s1">canvas</span><span class="s2">.</span><span class="s1">create_rectangle</span><span class="s2">(</span><span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">, </span><span class="s1">x </span><span class="s2">+ </span><span class="s1">SPACE_SIZE</span><span class="s2">, </span><span class="s1">y </span><span class="s2">+ </span><span class="s1">SPACE_SIZE</span><span class="s2">, </span><span class="s1">fill</span><span class="s2">=</span><span class="s1">SNAKE_COLOR</span><span class="s2">, </span><span class="s1">tag</span><span class="s2">=</span><span class="s5">&quot;snake&quot;</span><span class="s2">)</span>
+    <span class="s1">snake</span><span class="s2">.</span><span class="s1">squares</span><span class="s2">.</span><span class="s1">insert</span><span class="s2">(</span><span class="s3">0</span><span class="s2">, </span><span class="s1">square</span><span class="s2">)</span>
+
+    <span class="s0">if </span><span class="s1">x </span><span class="s2">== </span><span class="s1">food</span><span class="s2">.</span><span class="s1">coordinates</span><span class="s2">[</span><span class="s3">0</span><span class="s2">] </span><span class="s0">and </span><span class="s1">y </span><span class="s2">== </span><span class="s1">food</span><span class="s2">.</span><span class="s1">coordinates</span><span class="s2">[</span><span class="s3">1</span><span class="s2">]:</span>
+        <span class="s0">global </span><span class="s1">score</span>
+        <span class="s1">score </span><span class="s2">+= </span><span class="s3">1</span>
+        <span class="s1">label</span><span class="s2">.</span><span class="s1">config</span><span class="s2">(</span><span class="s1">text</span><span class="s2">=</span><span class="s5">&quot;Score: {}&quot;</span><span class="s2">.</span><span class="s1">format</span><span class="s2">(</span><span class="s1">score</span><span class="s2">))</span>
+        <span class="s1">canvas</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s5">&quot;food&quot;</span><span class="s2">)</span>
+        <span class="s1">food </span><span class="s2">= </span><span class="s1">Food</span><span class="s2">()</span>
+    <span class="s0">else</span><span class="s2">:</span>
+        <span class="s0">del </span><span class="s1">snake</span><span class="s2">.</span><span class="s1">coordinates</span><span class="s2">[-</span><span class="s3">1</span><span class="s2">]</span>
+        <span class="s1">canvas</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s1">snake</span><span class="s2">.</span><span class="s1">squares</span><span class="s2">[-</span><span class="s3">1</span><span class="s2">])</span>
+        <span class="s0">del </span><span class="s1">snake</span><span class="s2">.</span><span class="s1">squares</span><span class="s2">[-</span><span class="s3">1</span><span class="s2">]</span>
+
+    <span class="s0">if </span><span class="s1">check_collision</span><span class="s2">():</span>
+        <span class="s1">game_over</span><span class="s2">()</span>
+    <span class="s0">else</span><span class="s2">:</span>
+        <span class="s1">window</span><span class="s2">.</span><span class="s1">after</span><span class="s2">(</span><span class="s1">SPEED</span><span class="s2">, </span><span class="s1">next_turn</span><span class="s2">)</span>
+
+
+<span class="s0">def </span><span class="s1">change_direction</span><span class="s2">(</span><span class="s1">new_direction</span><span class="s2">):</span>
+    <span class="s0">global </span><span class="s1">direction</span>
+    <span class="s0">if </span><span class="s1">new_direction </span><span class="s2">== </span><span class="s5">'left' </span><span class="s0">and </span><span class="s1">direction </span><span class="s2">!= </span><span class="s5">'right'</span><span class="s2">:</span>
+        <span class="s1">direction </span><span class="s2">= </span><span class="s1">new_direction</span>
+    <span class="s0">elif </span><span class="s1">new_direction </span><span class="s2">== </span><span class="s5">'right' </span><span class="s0">and </span><span class="s1">direction </span><span class="s2">!= </span><span class="s5">'left'</span><span class="s2">:</span>
+        <span class="s1">direction </span><span class="s2">= </span><span class="s1">new_direction</span>
+    <span class="s0">elif </span><span class="s1">new_direction </span><span class="s2">== </span><span class="s5">'up' </span><span class="s0">and </span><span class="s1">direction </span><span class="s2">!= </span><span class="s5">'down'</span><span class="s2">:</span>
+        <span class="s1">direction </span><span class="s2">= </span><span class="s1">new_direction</span>
+    <span class="s0">elif </span><span class="s1">new_direction </span><span class="s2">== </span><span class="s5">'down' </span><span class="s0">and </span><span class="s1">direction </span><span class="s2">!= </span><span class="s5">'up'</span><span class="s2">:</span>
+        <span class="s1">direction </span><span class="s2">= </span><span class="s1">new_direction</span>
+
+
+<span class="s0">def </span><span class="s1">check_collision</span><span class="s2">():</span>
+    <span class="s1">x</span><span class="s2">, </span><span class="s1">y </span><span class="s2">= </span><span class="s1">snake</span><span class="s2">.</span><span class="s1">coordinates</span><span class="s2">[</span><span class="s3">0</span><span class="s2">]</span>
+    <span class="s0">if </span><span class="s1">x </span><span class="s2">&lt; </span><span class="s3">0 </span><span class="s0">or </span><span class="s1">x </span><span class="s2">&gt;= </span><span class="s1">GAME_WIDTH </span><span class="s0">or </span><span class="s1">y </span><span class="s2">&lt; </span><span class="s3">0 </span><span class="s0">or </span><span class="s1">y </span><span class="s2">&gt;= </span><span class="s1">GAME_HEIGHT</span><span class="s2">:</span>
+        <span class="s0">return True</span>
+    <span class="s0">for </span><span class="s1">body_part </span><span class="s0">in </span><span class="s1">snake</span><span class="s2">.</span><span class="s1">coordinates</span><span class="s2">[</span><span class="s3">1</span><span class="s2">:]:</span>
+        <span class="s0">if </span><span class="s1">x </span><span class="s2">== </span><span class="s1">body_part</span><span class="s2">[</span><span class="s3">0</span><span class="s2">] </span><span class="s0">and </span><span class="s1">y </span><span class="s2">== </span><span class="s1">body_part</span><span class="s2">[</span><span class="s3">1</span><span class="s2">]:</span>
+            <span class="s0">return True</span>
+    <span class="s0">return False</span>
+
+
+<span class="s0">def </span><span class="s1">game_over</span><span class="s2">():</span>
+    <span class="s0">global </span><span class="s1">score</span><span class="s2">, </span><span class="s1">high_score  </span><span class="s4"># Add high_score as global</span>
+
+    <span class="s0">if </span><span class="s1">score </span><span class="s2">&gt; </span><span class="s1">high_score</span><span class="s2">:</span>
+        <span class="s1">high_score </span><span class="s2">= </span><span class="s1">score  </span><span class="s4"># Update high score if current score is higher</span>
+
+    <span class="s1">canvas</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s5">&quot;all&quot;</span><span class="s2">)</span>
+    <span class="s1">canvas</span><span class="s2">.</span><span class="s1">create_text</span><span class="s2">(</span><span class="s1">GAME_WIDTH </span><span class="s2">// </span><span class="s3">2</span><span class="s2">, </span><span class="s1">GAME_HEIGHT </span><span class="s2">// </span><span class="s3">2 </span><span class="s2">- </span><span class="s3">50</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=(</span><span class="s5">'consolas'</span><span class="s2">, </span><span class="s3">40</span><span class="s2">), </span><span class="s1">text</span><span class="s2">=</span><span class="s5">&quot;GAME OVER&quot;</span><span class="s2">, </span><span class="s1">fill</span><span class="s2">=</span><span class="s5">&quot;red&quot;</span><span class="s2">)</span>
+    <span class="s1">canvas</span><span class="s2">.</span><span class="s1">create_text</span><span class="s2">(</span><span class="s1">GAME_WIDTH </span><span class="s2">// </span><span class="s3">2</span><span class="s2">, </span><span class="s1">GAME_HEIGHT </span><span class="s2">// </span><span class="s3">2</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=(</span><span class="s5">'consolas'</span><span class="s2">, </span><span class="s3">20</span><span class="s2">), </span><span class="s1">text</span><span class="s2">=</span><span class="s5">f&quot;High Score: </span><span class="s0">{</span><span class="s1">high_score</span><span class="s0">}</span><span class="s5">&quot;</span><span class="s2">,</span>
+                       <span class="s1">fill</span><span class="s2">=</span><span class="s5">&quot;yellow&quot;</span><span class="s2">)</span>
+
+    <span class="s1">play_again_button </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Button</span><span class="s2">(</span><span class="s1">window</span><span class="s2">, </span><span class="s1">text</span><span class="s2">=</span><span class="s5">&quot;Play Again&quot;</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=(</span><span class="s5">'consolas'</span><span class="s2">, </span><span class="s3">20</span><span class="s2">), </span><span class="s1">command</span><span class="s2">=</span><span class="s1">play_again</span><span class="s2">)</span>
+    <span class="s1">quit_button </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Button</span><span class="s2">(</span><span class="s1">window</span><span class="s2">, </span><span class="s1">text</span><span class="s2">=</span><span class="s5">&quot;Quit&quot;</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=(</span><span class="s5">'consolas'</span><span class="s2">, </span><span class="s3">20</span><span class="s2">), </span><span class="s1">command</span><span class="s2">=</span><span class="s1">quit_game</span><span class="s2">)</span>
+
+    <span class="s1">canvas</span><span class="s2">.</span><span class="s1">create_window</span><span class="s2">(</span><span class="s1">GAME_WIDTH </span><span class="s2">// </span><span class="s3">2</span><span class="s2">, </span><span class="s1">GAME_HEIGHT </span><span class="s2">// </span><span class="s3">2 </span><span class="s2">+ </span><span class="s3">50</span><span class="s2">, </span><span class="s1">window</span><span class="s2">=</span><span class="s1">play_again_button</span><span class="s2">)</span>
+    <span class="s1">canvas</span><span class="s2">.</span><span class="s1">create_window</span><span class="s2">(</span><span class="s1">GAME_WIDTH </span><span class="s2">// </span><span class="s3">2</span><span class="s2">, </span><span class="s1">GAME_HEIGHT </span><span class="s2">// </span><span class="s3">2 </span><span class="s2">+ </span><span class="s3">100</span><span class="s2">, </span><span class="s1">window</span><span class="s2">=</span><span class="s1">quit_button</span><span class="s2">)</span>
+
+
+<span class="s0">def </span><span class="s1">play_again</span><span class="s2">():</span>
+    <span class="s0">for </span><span class="s1">widget </span><span class="s0">in </span><span class="s1">canvas</span><span class="s2">.</span><span class="s1">winfo_children</span><span class="s2">():</span>
+        <span class="s1">widget</span><span class="s2">.</span><span class="s1">destroy</span><span class="s2">()</span>
+
+    <span class="s0">global </span><span class="s1">score</span><span class="s2">, </span><span class="s1">direction</span><span class="s2">, </span><span class="s1">snake</span><span class="s2">, </span><span class="s1">food</span><span class="s2">, </span><span class="s1">label</span>
+    <span class="s1">score </span><span class="s2">= </span><span class="s3">0  </span><span class="s4"># Reset the current score for the new game session</span>
+    <span class="s1">direction </span><span class="s2">= </span><span class="s5">'down'</span>
+    <span class="s1">label</span><span class="s2">.</span><span class="s1">config</span><span class="s2">(</span><span class="s1">text</span><span class="s2">=</span><span class="s5">&quot;Score: {}&quot;</span><span class="s2">.</span><span class="s1">format</span><span class="s2">(</span><span class="s1">score</span><span class="s2">))</span>
+    <span class="s1">canvas</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s5">&quot;all&quot;</span><span class="s2">)</span>
+
+    <span class="s1">snake </span><span class="s2">= </span><span class="s1">Snake</span><span class="s2">()</span>
+    <span class="s1">food </span><span class="s2">= </span><span class="s1">Food</span><span class="s2">()</span>
+    <span class="s1">next_turn</span><span class="s2">()</span>
+
+
+<span class="s0">def </span><span class="s1">quit_game</span><span class="s2">():</span>
+    <span class="s1">window</span><span class="s2">.</span><span class="s1">destroy</span><span class="s2">()</span>
+
+
+<span class="s1">window </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Tk</span><span class="s2">()</span>
+<span class="s1">window</span><span class="s2">.</span><span class="s1">title</span><span class="s2">(</span><span class="s5">&quot;Snake Game&quot;</span><span class="s2">)</span>
+<span class="s1">window</span><span class="s2">.</span><span class="s1">resizable</span><span class="s2">(</span><span class="s0">False</span><span class="s2">, </span><span class="s0">False</span><span class="s2">)</span>
+
+<span class="s1">canvas </span><span class="s2">= </span><span class="s1">Canvas</span><span class="s2">(</span><span class="s1">window</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">BACKGROUND_COLOR</span><span class="s2">, </span><span class="s1">height</span><span class="s2">=</span><span class="s1">GAME_HEIGHT</span><span class="s2">, </span><span class="s1">width</span><span class="s2">=</span><span class="s1">GAME_WIDTH</span><span class="s2">)</span>
+<span class="s1">canvas</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">()</span>
+
+<span class="s1">label </span><span class="s2">= </span><span class="s1">Label</span><span class="s2">(</span><span class="s1">window</span><span class="s2">, </span><span class="s1">text</span><span class="s2">=</span><span class="s5">&quot;Score: 0&quot;</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=(</span><span class="s5">'consolas'</span><span class="s2">, </span><span class="s3">20</span><span class="s2">))</span>
+<span class="s1">label</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">()</span>
+
+<span class="s1">score </span><span class="s2">= </span><span class="s3">0</span>
+<span class="s1">direction </span><span class="s2">= </span><span class="s5">'down'</span>
+
+<span class="s1">snake </span><span class="s2">= </span><span class="s1">Snake</span><span class="s2">()</span>
+<span class="s1">food </span><span class="s2">= </span><span class="s1">Food</span><span class="s2">()</span>
+
+<span class="s1">window</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">(</span><span class="s5">'&lt;Left&gt;'</span><span class="s2">, </span><span class="s0">lambda </span><span class="s1">event</span><span class="s2">: </span><span class="s1">change_direction</span><span class="s2">(</span><span class="s5">'left'</span><span class="s2">))</span>
+<span class="s1">window</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">(</span><span class="s5">'&lt;Right&gt;'</span><span class="s2">, </span><span class="s0">lambda </span><span class="s1">event</span><span class="s2">: </span><span class="s1">change_direction</span><span class="s2">(</span><span class="s5">'right'</span><span class="s2">))</span>
+<span class="s1">window</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">(</span><span class="s5">'&lt;Up&gt;'</span><span class="s2">, </span><span class="s0">lambda </span><span class="s1">event</span><span class="s2">: </span><span class="s1">change_direction</span><span class="s2">(</span><span class="s5">'up'</span><span class="s2">))</span>
+<span class="s1">window</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">(</span><span class="s5">'&lt;Down&gt;'</span><span class="s2">, </span><span class="s0">lambda </span><span class="s1">event</span><span class="s2">: </span><span class="s1">change_direction</span><span class="s2">(</span><span class="s5">'down'</span><span class="s2">))</span>
+
+<span class="s1">snake </span><span class="s2">= </span><span class="s1">Snake</span><span class="s2">()</span>
+<span class="s1">food </span><span class="s2">= </span><span class="s1">Food</span><span class="s2">()  </span><span class="s4"># Ensure this is correctly instantiated at the global level</span>
+
+<span class="s1">next_turn</span><span class="s2">()  </span><span class="s4"># Start the game loop</span>
+
+<span class="s1">window</span><span class="s2">.</span><span class="s1">mainloop</span><span class="s2">()</span></pre>
+</body>
+</html>
