@@ -6,9 +6,11 @@ from tkinter import Canvas, Label, Button
 GAME_WIDTH = 700
 GAME_HEIGHT = 700
 SPEED = 102# Milliseconds
-SPACE_SIZE = 35
+NORMAL_SPEED = 102  # Milliseconds for Normal mode
+EXTREME_SPEED = 20  # Milliseconds for Extreme mode
+NORMAL_SPACE_SIZE = 35  # Space size for Normal mode
+EXTREME_SPACE_SIZE = 20  # Space size for Extreme modeSNAKE_COLOR = None
 BODY_PARTS = 5
-SNAKE_COLOR = None
 FOOD_COLOR = "#ADFF2F"
 BACKGROUND_COLOR = "#000000"
 score = 0
@@ -38,6 +40,34 @@ class Food:
 
         self.square = canvas.create_rectangle(self.x, self.y, self.x + SPACE_SIZE, self.y + SPACE_SIZE, fill=FOOD_COLOR,
                                               tag="food")
+
+def select_game_mode():
+    global SPEED, SPACE_SIZE  # Use global variables for speed and space size
+    mode_window = tk.Tk()
+    mode_window.title("Select Game Mode")
+    mode_window.geometry(f"{GAME_WIDTH}x{GAME_HEIGHT}")  # Match the game window size
+
+    def choose_mode(is_extreme):
+        global SPEED, SPACE_SIZE
+        if is_extreme:
+            SPEED = EXTREME_SPEED
+            SPACE_SIZE = EXTREME_SPACE_SIZE
+        else:
+            SPEED = NORMAL_SPEED
+            SPACE_SIZE = NORMAL_SPACE_SIZE
+        mode_window.destroy()  # Close the mode selection window
+        select_snake_color()  # Proceed to color selection
+
+    # Centering buttons using place
+    button_width = 200  # Width of the button in pixels
+    button_height = 50  # Height of the button in pixels
+    normal_mode_button = tk.Button(mode_window, text="Normal Mode", command=lambda: choose_mode(False), font=('Arial', 14))
+    extreme_mode_button = tk.Button(mode_window, text="Extreme Mode", command=lambda: choose_mode(True), font=('Arial', 14))
+
+    normal_mode_button.place(relx=0.5, rely=0.4, anchor='center', width=button_width, height=button_height)
+    extreme_mode_button.place(relx=0.5, rely=0.6, anchor='center', width=button_width, height=button_height)
+
+    mode_window.mainloop()
 
 
 def select_snake_color():
@@ -199,7 +229,8 @@ def quit_game():
 
 
 if __name__ == "__main__":
-    select_snake_color()
+    select_game_mode()
+
 
 
 window = tk.Tk()
